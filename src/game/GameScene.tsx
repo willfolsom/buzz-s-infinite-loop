@@ -3,18 +3,17 @@ import { Canvas } from "@react-three/fiber";
 import BuzzLightyear from "./BuzzLightyear";
 import Ground from "./Ground";
 import Obstacles from "./Obstacles";
+import Creatures from "./Creatures";
 import { environments } from "./environments";
 
 export default function GameScene() {
   const [envIndex, setEnvIndex] = useState(0);
   const [targetX, setTargetX] = useState(0);
-  const [isMoving, setIsMoving] = useState(true);
   const keysRef = useRef<Set<string>>(new Set());
 
   const env = environments[envIndex];
-  const speed = isMoving ? 8 : 0;
+  const speed = 8;
 
-  // Cycle environments every 3 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setEnvIndex((prev) => (prev + 1) % environments.length);
@@ -22,12 +21,8 @@ export default function GameScene() {
     return () => clearInterval(interval);
   }, []);
 
-  // Keyboard controls
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     keysRef.current.add(e.key);
-    if (e.key === " " || e.key === "ArrowUp" || e.key === "w") {
-      setIsMoving((prev) => !prev);
-    }
   }, []);
 
   const handleKeyUp = useCallback((e: KeyboardEvent) => {
@@ -43,7 +38,6 @@ export default function GameScene() {
     };
   }, [handleKeyDown, handleKeyUp]);
 
-  // Movement loop
   useEffect(() => {
     let raf: number;
     const update = () => {
@@ -63,7 +57,7 @@ export default function GameScene() {
   return (
     <div className="relative w-full h-screen bg-background overflow-hidden">
       <Canvas
-        camera={{ position: [0, 2.5, 5], fov: 60, near: 0.1, far: 100 }}
+        camera={{ position: [0, 1.8, 5], fov: 60, near: 0.1, far: 100 }}
         gl={{ antialias: false }}
         dpr={1}
       >
@@ -82,6 +76,7 @@ export default function GameScene() {
           speed={speed}
           seed={envIndex * 1000}
         />
+        <Creatures envIndex={envIndex} speed={speed} />
       </Canvas>
 
       {/* HUD */}
@@ -90,18 +85,15 @@ export default function GameScene() {
       </div>
 
       <div className="absolute top-4 right-4 hud-panel">
-        <p className="hud-text text-accent text-[10px]">
-          {isMoving ? "▶ FLYING" : "■ STOPPED"}
-        </p>
+        <p className="hud-text text-accent text-[10px]">▶ RUNNING</p>
       </div>
 
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 hud-panel text-center">
         <p className="hud-text text-foreground text-[8px] leading-relaxed">
-          ← → MOVE &nbsp; SPACE FLY/STOP
+          ← → MOVE
         </p>
       </div>
 
-      {/* Buzz title */}
       <div className="absolute top-1/2 left-4 -translate-y-1/2 pointer-events-none opacity-20">
         <p className="hud-text text-primary text-[10px] rotate-90 origin-center whitespace-nowrap tracking-widest">
           TO INFINITY AND BEYOND
