@@ -81,14 +81,6 @@ export default function GameScene() {
         <Creatures envIndex={envIndex} speed={speed} />
       </Canvas>
 
-      {/* SoundCloud player */}
-      <iframe
-        className="absolute bottom-12 left-1/2 -translate-x-1/2 w-[300px] h-[80px] opacity-60 pointer-events-auto z-10"
-        scrolling="no"
-        frameBorder="no"
-        allow="autoplay"
-        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/sxnctuary-y/fast-travel&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
-      />
 
       {/* HUD */}
       <div className="absolute top-4 left-4 hud-panel">
