@@ -58,7 +58,7 @@ export default function GameScene() {
   return (
     <div className="relative w-full h-screen bg-background overflow-hidden">
       <Canvas
-        camera={{ position: [0, 2.8, 4], fov: 65, near: 0.1, far: 100 }}
+        camera={{ position: [0, 2.8, 4], fov: 65, near: 0.1, far: 100, rotation: [-0.26, 0, 0] }}
         gl={{ antialias: false }}
         dpr={1}
       >
