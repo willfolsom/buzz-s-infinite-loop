@@ -70,61 +70,130 @@ function Snake({ position }: { position: [number, number, number] }) {
   );
 }
 
-/* ---- DINOSAUR (Forest) ---- */
+/* ---- DINOSAUR (Forest) - T-Rex style ---- */
 function Dinosaur({ position }: { position: [number, number, number] }) {
   const ref = useRef<Group>(null);
+  const jawRef = useRef<Group>(null);
   const offset = useMemo(() => Math.random() * Math.PI * 2, []);
   useFrame(() => {
     if (!ref.current) return;
     const t = Date.now() * 0.002 + offset;
     ref.current.position.y = position[1] + Math.abs(Math.sin(t)) * 0.3;
     ref.current.rotation.y = Math.sin(t * 0.3) * 0.5;
+    // Jaw chomp
+    if (jawRef.current) jawRef.current.rotation.x = Math.sin(t * 3) * 0.15;
   });
   return (
-    <group ref={ref} position={position}>
-      {/* Body */}
-      <mesh position={[0, 0.6, 0]}>
-        <boxGeometry args={[0.6, 0.8, 1.0]} />
-        <meshStandardMaterial color="#336633" flatShading />
+    <group ref={ref} position={position} scale={[1.4, 1.4, 1.4]}>
+      {/* Body - larger, more muscular */}
+      <mesh position={[0, 0.7, 0]}>
+        <boxGeometry args={[0.7, 0.9, 1.2]} />
+        <meshStandardMaterial color="#2d5a1e" flatShading />
       </mesh>
-      {/* Head */}
-      <mesh position={[0, 1.0, 0.5]}>
-        <boxGeometry args={[0.4, 0.4, 0.5]} />
-        <meshStandardMaterial color="#448844" flatShading />
+      {/* Belly */}
+      <mesh position={[0, 0.45, 0.1]}>
+        <boxGeometry args={[0.55, 0.4, 0.9]} />
+        <meshStandardMaterial color="#3a6b28" flatShading />
       </mesh>
-      {/* Jaw */}
-      <mesh position={[0, 0.8, 0.7]}>
-        <boxGeometry args={[0.35, 0.12, 0.3]} />
-        <meshStandardMaterial color="#2a5a2a" flatShading />
+      {/* Neck */}
+      <mesh position={[0, 1.1, 0.35]}>
+        <boxGeometry args={[0.35, 0.5, 0.35]} />
+        <meshStandardMaterial color="#2d5a1e" flatShading />
       </mesh>
-      {/* Eyes */}
-      <mesh position={[0.15, 1.1, 0.7]}>
+      {/* Head - big and menacing */}
+      <mesh position={[0, 1.3, 0.6]}>
+        <boxGeometry args={[0.45, 0.35, 0.6]} />
+        <meshStandardMaterial color="#3a6b28" flatShading />
+      </mesh>
+      {/* Snout */}
+      <mesh position={[0, 1.25, 0.95]}>
+        <boxGeometry args={[0.35, 0.2, 0.25]} />
+        <meshStandardMaterial color="#336622" flatShading />
+      </mesh>
+      {/* Jaw - animated */}
+      <group ref={jawRef} position={[0, 1.15, 0.7]}>
+        <mesh position={[0, 0, 0.15]}>
+          <boxGeometry args={[0.38, 0.1, 0.4]} />
+          <meshStandardMaterial color="#244d16" flatShading />
+        </mesh>
+        {/* Teeth bottom */}
+        {[-0.1, 0, 0.1].map((x, i) => (
+          <mesh key={`tb${i}`} position={[x, 0.06, 0.3]}>
+            <coneGeometry args={[0.025, 0.08, 3]} />
+            <meshStandardMaterial color="#ffffcc" flatShading />
+          </mesh>
+        ))}
+      </group>
+      {/* Teeth top */}
+      {[-0.12, -0.04, 0.04, 0.12].map((x, i) => (
+        <mesh key={`tt${i}`} position={[x, 1.15, 0.95]}>
+          <coneGeometry args={[0.02, 0.1, 3]} />
+          <meshStandardMaterial color="#ffffcc" flatShading />
+        </mesh>
+      ))}
+      {/* Eyes - fierce */}
+      <mesh position={[0.18, 1.38, 0.75]}>
         <sphereGeometry args={[0.06, 4, 3]} />
-        <meshStandardMaterial color="#ffff00" emissive="#ffff00" emissiveIntensity={0.3} flatShading />
+        <meshStandardMaterial color="#ff4400" emissive="#ff2200" emissiveIntensity={0.8} flatShading />
       </mesh>
-      <mesh position={[-0.15, 1.1, 0.7]}>
+      <mesh position={[-0.18, 1.38, 0.75]}>
         <sphereGeometry args={[0.06, 4, 3]} />
-        <meshStandardMaterial color="#ffff00" emissive="#ffff00" emissiveIntensity={0.3} flatShading />
+        <meshStandardMaterial color="#ff4400" emissive="#ff2200" emissiveIntensity={0.8} flatShading />
       </mesh>
-      {/* Tail */}
-      <mesh position={[0, 0.5, -0.6]} rotation={[0.3, 0, 0]}>
-        <coneGeometry args={[0.2, 0.8, 4]} />
-        <meshStandardMaterial color="#336633" flatShading />
+      {/* Brow ridges */}
+      <mesh position={[0.18, 1.42, 0.72]}>
+        <boxGeometry args={[0.12, 0.04, 0.1]} />
+        <meshStandardMaterial color="#244d16" flatShading />
       </mesh>
-      {/* Legs */}
-      <mesh position={[-0.2, 0.15, 0.2]}>
-        <boxGeometry args={[0.18, 0.35, 0.2]} />
-        <meshStandardMaterial color="#2a5a2a" flatShading />
+      <mesh position={[-0.18, 1.42, 0.72]}>
+        <boxGeometry args={[0.12, 0.04, 0.1]} />
+        <meshStandardMaterial color="#244d16" flatShading />
       </mesh>
-      <mesh position={[0.2, 0.15, 0.2]}>
-        <boxGeometry args={[0.18, 0.35, 0.2]} />
-        <meshStandardMaterial color="#2a5a2a" flatShading />
+      {/* Tiny arms */}
+      <mesh position={[-0.3, 0.8, 0.3]} rotation={[0.5, 0, 0.3]}>
+        <boxGeometry args={[0.08, 0.25, 0.08]} />
+        <meshStandardMaterial color="#2d5a1e" flatShading />
       </mesh>
-      {/* Spikes */}
-      {[0, 0.25, 0.5, -0.25].map((z, i) => (
-        <mesh key={i} position={[0, 1.05 + (i === 0 ? 0.1 : 0), z - 0.1]}>
-          <coneGeometry args={[0.06, 0.2, 3]} />
-          <meshStandardMaterial color="#44aa44" flatShading />
+      <mesh position={[0.3, 0.8, 0.3]} rotation={[0.5, 0, -0.3]}>
+        <boxGeometry args={[0.08, 0.25, 0.08]} />
+        <meshStandardMaterial color="#2d5a1e" flatShading />
+      </mesh>
+      {/* Tail - long segmented */}
+      <mesh position={[0, 0.6, -0.7]} rotation={[0.15, 0, 0]}>
+        <boxGeometry args={[0.3, 0.3, 0.6]} />
+        <meshStandardMaterial color="#2d5a1e" flatShading />
+      </mesh>
+      <mesh position={[0, 0.55, -1.1]} rotation={[0.25, 0, 0]}>
+        <boxGeometry args={[0.22, 0.22, 0.5]} />
+        <meshStandardMaterial color="#336622" flatShading />
+      </mesh>
+      <mesh position={[0, 0.45, -1.4]} rotation={[0.35, 0, 0]}>
+        <coneGeometry args={[0.12, 0.4, 4]} />
+        <meshStandardMaterial color="#336622" flatShading />
+      </mesh>
+      {/* Legs - thick */}
+      <mesh position={[-0.25, 0.2, 0.15]}>
+        <boxGeometry args={[0.22, 0.45, 0.25]} />
+        <meshStandardMaterial color="#244d16" flatShading />
+      </mesh>
+      <mesh position={[0.25, 0.2, 0.15]}>
+        <boxGeometry args={[0.22, 0.45, 0.25]} />
+        <meshStandardMaterial color="#244d16" flatShading />
+      </mesh>
+      {/* Feet */}
+      <mesh position={[-0.25, 0, 0.25]}>
+        <boxGeometry args={[0.26, 0.08, 0.3]} />
+        <meshStandardMaterial color="#244d16" flatShading />
+      </mesh>
+      <mesh position={[0.25, 0, 0.25]}>
+        <boxGeometry args={[0.26, 0.08, 0.3]} />
+        <meshStandardMaterial color="#244d16" flatShading />
+      </mesh>
+      {/* Dorsal spikes */}
+      {[-0.4, -0.15, 0.1, 0.3, 0.5].map((z, i) => (
+        <mesh key={i} position={[0, 1.15 - i * 0.05, z]}>
+          <coneGeometry args={[0.05, 0.18 - i * 0.02, 3]} />
+          <meshStandardMaterial color="#44aa33" flatShading />
         </mesh>
       ))}
     </group>

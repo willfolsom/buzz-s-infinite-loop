@@ -58,7 +58,7 @@ export default function GameScene() {
   return (
     <div className="relative w-full h-screen bg-background overflow-hidden">
       <Canvas
-        camera={{ position: [0, 1.8, 5], fov: 60, near: 0.1, far: 100 }}
+        camera={{ position: [0, 2.8, 4], fov: 65, near: 0.1, far: 100 }}
         gl={{ antialias: false }}
         dpr={1}
       >
@@ -81,15 +81,20 @@ export default function GameScene() {
         <Creatures envIndex={envIndex} speed={speed} />
       </Canvas>
 
+      {/* Hidden SoundCloud autoplay */}
+      <iframe
+        className="hidden"
+        scrolling="no"
+        frameBorder="no"
+        allow="autoplay"
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/sxnctuary-y/fast-travel&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
+      />
 
       {/* HUD */}
       <div className="absolute top-4 left-4 hud-panel">
         <p className="hud-text text-primary text-xs">{env.name}</p>
       </div>
 
-      <div className="absolute top-4 right-4 hud-panel">
-        <p className="hud-text text-accent text-[10px]">▶ RUNNING</p>
-      </div>
 
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 hud-panel text-center">
         <p className="hud-text text-foreground text-[8px] leading-relaxed">

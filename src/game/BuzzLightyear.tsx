@@ -24,7 +24,7 @@ export default function BuzzLightyear({ targetX }: { targetX: number }) {
   });
 
   return (
-    <group ref={group} position={[0, 0, 0]}>
+    <group ref={group} position={[0, -0.6, 1]}>
       {/* Body - white torso */}
       <mesh position={[0, 0.6, 0]}>
         <boxGeometry args={[0.6, 0.7, 0.5]} />
