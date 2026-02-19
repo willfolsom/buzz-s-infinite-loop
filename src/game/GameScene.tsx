@@ -68,6 +68,7 @@ export default function GameScene() {
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 10, 5]} intensity={1} />
         <pointLight position={[0, 3, -5]} intensity={0.5} color={env.accentColor} />
+        <pointLight position={[0, 5, -35]} intensity={2} color="#ffffff" distance={50} />
 
         <Sigil color={env.obstacleColor} accentColor={env.accentColor} />
         <BuzzLightyear targetX={targetX} />

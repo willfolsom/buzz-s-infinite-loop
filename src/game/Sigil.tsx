@@ -83,7 +83,7 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
           return (
             <mesh key={`o${i}`} position={[mx, my, 0]} rotation={[0, 0, angle]}>
               <boxGeometry args={[len, 0.15, 0.05]} />
-              <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={0.8} flatShading transparent opacity={0.6} />
+              <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={1.5} flatShading transparent opacity={0.75} />
             </mesh>
           );
         })}
@@ -99,7 +99,7 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
           return (
             <mesh key={`o2-${i}`} position={[mx, my, -0.1]} rotation={[0, 0, angle]}>
               <boxGeometry args={[len, 0.08, 0.03]} />
-              <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={0.4} flatShading transparent opacity={0.25} />
+              <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={0.8} flatShading transparent opacity={0.35} />
             </mesh>
           );
         })}
@@ -128,12 +128,12 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
                 <mesh key={`b${bi}-${si}`} position={seg} rotation={[0, 0, angle]}>
                   <boxGeometry args={[0.8, 0.04, 0.02]} />
                   <meshStandardMaterial
-                    color={accentColor}
+                    color="#ffffff"
                     emissive={accentColor}
-                    emissiveIntensity={1.5}
+                    emissiveIntensity={2.5}
                     flatShading
                     transparent
-                    opacity={0.6 - si * 0.08}
+                    opacity={0.7 - si * 0.08}
                   />
                 </mesh>
               );
@@ -147,12 +147,12 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
             <mesh key={`sp${i}`} position={pos}>
               <sphereGeometry args={[0.08 + (i % 3) * 0.04, 4, 3]} />
               <meshStandardMaterial
-                color={i % 2 === 0 ? accentColor : color}
+                color="#ffffff"
                 emissive={i % 2 === 0 ? accentColor : color}
-                emissiveIntensity={2}
+                emissiveIntensity={3}
                 flatShading
                 transparent
-                opacity={0.7}
+                opacity={0.8}
               />
             </mesh>
           ))}
@@ -169,8 +169,8 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
             const len = Math.sqrt((next[0] - pos[0]) ** 2 + (next[1] - pos[1]) ** 2);
             return (
               <mesh key={`h${i}`} position={[mx, my, 0]} rotation={[0, 0, angle]}>
-                <boxGeometry args={[len, 0.12, 0.04]} />
-                <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={1} flatShading transparent opacity={0.5} />
+              <boxGeometry args={[len, 0.12, 0.04]} />
+              <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={1.8} flatShading transparent opacity={0.6} />
               </mesh>
             );
           })}
@@ -204,11 +204,11 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
           {/* Center eye */}
           <mesh>
             <ringGeometry args={[0.8, 1.2, 6]} />
-            <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={1.5} side={DoubleSide} flatShading transparent opacity={0.7} />
+            <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={2} side={DoubleSide} flatShading transparent opacity={0.8} />
           </mesh>
           <mesh>
             <sphereGeometry args={[0.5, 5, 4]} />
-            <meshStandardMaterial color={color} emissive={accentColor} emissiveIntensity={2} flatShading transparent opacity={0.6} />
+            <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={3} flatShading transparent opacity={0.7} />
           </mesh>
           {/* Inner eye ring */}
           <mesh>
