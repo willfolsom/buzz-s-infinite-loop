@@ -10,6 +10,7 @@ function seededRandom(s: number) {
 /* ---- FISH (Ocean) ---- */
 function Fish({ position, speed }: { position: [number, number, number]; speed: number }) {
   const ref = useRef<Group>(null);
+  const tailRef = useRef<Group>(null);
   const offset = useMemo(() => Math.random() * Math.PI * 2, []);
   useFrame(() => {
     if (!ref.current) return;
@@ -17,24 +18,74 @@ function Fish({ position, speed }: { position: [number, number, number]; speed: 
     ref.current.position.x = position[0] + Math.sin(t) * 2;
     ref.current.position.y = position[1] + Math.sin(t * 1.5) * 0.5;
     ref.current.rotation.y = Math.sin(t) * 0.5 + Math.PI;
-    // Tail wag
-    ref.current.children[1]?.rotation && ((ref.current.children[1] as any).rotation.y = Math.sin(t * 5) * 0.4);
+    if (tailRef.current) tailRef.current.rotation.y = Math.sin(t * 6) * 0.5;
   });
   return (
-    <group ref={ref} position={position}>
+    <group ref={ref} position={position} scale={[1.3, 1.3, 1.3]}>
+      {/* Body */}
       <mesh>
-        <sphereGeometry args={[0.3, 5, 4]} />
-        <meshStandardMaterial color="#2299ff" flatShading />
+        <sphereGeometry args={[0.3, 6, 5]} />
+        <meshStandardMaterial color="#1199ff" flatShading />
       </mesh>
-      <mesh position={[-0.3, 0, 0]}>
-        <coneGeometry args={[0.2, 0.3, 3]} />
-        <meshStandardMaterial color="#1177dd" flatShading />
+      {/* Body stripe */}
+      <mesh position={[0, 0, 0.01]}>
+        <sphereGeometry args={[0.28, 6, 5]} />
+        <meshStandardMaterial color="#33bbff" flatShading transparent opacity={0.6} />
       </mesh>
-      {/* Eye */}
-      <mesh position={[0.15, 0.1, 0.15]}>
-        <sphereGeometry args={[0.05, 4, 3]} />
+      {/* Tail fin */}
+      <group ref={tailRef} position={[-0.3, 0, 0]}>
+        <mesh position={[-0.12, 0.08, 0]} rotation={[0, 0, 0.3]}>
+          <boxGeometry args={[0.2, 0.18, 0.03]} />
+          <meshStandardMaterial color="#0077cc" flatShading />
+        </mesh>
+        <mesh position={[-0.12, -0.08, 0]} rotation={[0, 0, -0.3]}>
+          <boxGeometry args={[0.2, 0.18, 0.03]} />
+          <meshStandardMaterial color="#0077cc" flatShading />
+        </mesh>
+      </group>
+      {/* Dorsal fin */}
+      <mesh position={[0, 0.25, 0]} rotation={[0, 0, 0.2]}>
+        <coneGeometry args={[0.1, 0.2, 3]} />
+        <meshStandardMaterial color="#0088dd" flatShading />
+      </mesh>
+      {/* Pectoral fins */}
+      <mesh position={[0.05, -0.1, 0.2]} rotation={[0.4, 0.3, 0]}>
+        <boxGeometry args={[0.12, 0.02, 0.15]} />
+        <meshStandardMaterial color="#0088dd" flatShading />
+      </mesh>
+      <mesh position={[0.05, -0.1, -0.2]} rotation={[-0.4, -0.3, 0]}>
+        <boxGeometry args={[0.12, 0.02, 0.15]} />
+        <meshStandardMaterial color="#0088dd" flatShading />
+      </mesh>
+      {/* Eyes */}
+      <mesh position={[0.2, 0.08, 0.15]}>
+        <sphereGeometry args={[0.055, 4, 3]} />
         <meshStandardMaterial color="#ffffff" flatShading />
       </mesh>
+      <mesh position={[0.22, 0.08, 0.15]}>
+        <sphereGeometry args={[0.03, 4, 3]} />
+        <meshStandardMaterial color="#000000" flatShading />
+      </mesh>
+      <mesh position={[0.2, 0.08, -0.15]}>
+        <sphereGeometry args={[0.055, 4, 3]} />
+        <meshStandardMaterial color="#ffffff" flatShading />
+      </mesh>
+      <mesh position={[0.22, 0.08, -0.15]}>
+        <sphereGeometry args={[0.03, 4, 3]} />
+        <meshStandardMaterial color="#000000" flatShading />
+      </mesh>
+      {/* Mouth */}
+      <mesh position={[0.28, -0.02, 0]}>
+        <sphereGeometry args={[0.04, 4, 3]} />
+        <meshStandardMaterial color="#ff6688" flatShading />
+      </mesh>
+      {/* Scales shimmer */}
+      {[0.1, -0.05, -0.15].map((x, i) => (
+        <mesh key={i} position={[x, 0.05 + i * 0.04, 0.22]}>
+          <sphereGeometry args={[0.025, 3, 3]} />
+          <meshStandardMaterial color="#66ddff" emissive="#44bbff" emissiveIntensity={0.5} flatShading transparent opacity={0.5} />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -43,29 +94,77 @@ function Fish({ position, speed }: { position: [number, number, number]; speed: 
 function Snake({ position }: { position: [number, number, number] }) {
   const ref = useRef<Group>(null);
   const offset = useMemo(() => Math.random() * Math.PI * 2, []);
+  const segments = 12;
   useFrame(() => {
     if (!ref.current) return;
-    const t = Date.now() * 0.003 + offset;
-    ref.current.rotation.y = t * 0.5;
+    const t = Date.now() * 0.002 + offset;
+    // Slithering motion - each segment moves with wave
+    ref.current.children.forEach((child, i) => {
+      if (i < segments) {
+        const phase = t * 3 + i * 0.6;
+        const r = 0.6 + i * 0.08;
+        const angle = (i / segments) * Math.PI * 1.8 + Math.sin(phase) * 0.3;
+        child.position.x = Math.cos(angle) * r;
+        child.position.z = Math.sin(angle) * r;
+        child.position.y = 0.06 + Math.sin(phase) * 0.06;
+      }
+    });
+    ref.current.rotation.y = t * 0.4;
   });
-  const segments = 8;
   return (
-    <group ref={ref} position={position}>
+    <group ref={ref} position={position} scale={[1.3, 1.3, 1.3]}>
+      {/* Body segments */}
       {Array.from({ length: segments }).map((_, i) => {
-        const angle = (i / segments) * Math.PI * 2;
-        const r = 0.6;
+        const size = i === 0 ? 0.14 : 0.12 - i * 0.006;
+        const isHead = i === 0;
         return (
-          <mesh key={i} position={[Math.cos(angle) * r, 0.05 + Math.sin(i * 0.5) * 0.1, Math.sin(angle) * r]}>
-            <sphereGeometry args={[0.1 - i * 0.008, 4, 3]} />
-            <meshStandardMaterial color={i === 0 ? "#558822" : "#447711"} flatShading />
+          <mesh key={i}>
+            <sphereGeometry args={[Math.max(size, 0.04), 5, 4]} />
+            <meshStandardMaterial
+              color={isHead ? "#5a8a22" : i % 2 === 0 ? "#4a7a1a" : "#6b9933"}
+              flatShading
+            />
           </mesh>
         );
       })}
-      {/* Eyes on head */}
-      <mesh position={[0.6, 0.15, 0.06]}>
-        <sphereGeometry args={[0.03, 3, 3]} />
-        <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={0.5} flatShading />
+      {/* Head details - on first segment */}
+      {/* Eyes */}
+      <mesh position={[0.7, 0.12, 0.08]}>
+        <sphereGeometry args={[0.04, 4, 3]} />
+        <meshStandardMaterial color="#ffee00" emissive="#ffcc00" emissiveIntensity={0.6} flatShading />
       </mesh>
+      <mesh position={[0.72, 0.12, 0.08]}>
+        <sphereGeometry args={[0.02, 3, 3]} />
+        <meshStandardMaterial color="#000000" flatShading />
+      </mesh>
+      <mesh position={[0.7, 0.12, -0.08]}>
+        <sphereGeometry args={[0.04, 4, 3]} />
+        <meshStandardMaterial color="#ffee00" emissive="#ffcc00" emissiveIntensity={0.6} flatShading />
+      </mesh>
+      <mesh position={[0.72, 0.12, -0.08]}>
+        <sphereGeometry args={[0.02, 3, 3]} />
+        <meshStandardMaterial color="#000000" flatShading />
+      </mesh>
+      {/* Tongue */}
+      <mesh position={[0.82, 0.04, 0]}>
+        <boxGeometry args={[0.15, 0.01, 0.01]} />
+        <meshStandardMaterial color="#cc0000" flatShading />
+      </mesh>
+      <mesh position={[0.91, 0.04, 0.02]}>
+        <boxGeometry args={[0.06, 0.01, 0.01]} />
+        <meshStandardMaterial color="#cc0000" flatShading />
+      </mesh>
+      <mesh position={[0.91, 0.04, -0.02]}>
+        <boxGeometry args={[0.06, 0.01, 0.01]} />
+        <meshStandardMaterial color="#cc0000" flatShading />
+      </mesh>
+      {/* Diamond pattern on back */}
+      {[1, 3, 5, 7].map((i) => (
+        <mesh key={`d${i}`} position={[0, 0.13, 0]} rotation={[0, (i / segments) * Math.PI * 1.8, 0]}>
+          <boxGeometry args={[0.06, 0.02, 0.06]} />
+          <meshStandardMaterial color="#8b6914" flatShading transparent opacity={0.7} />
+        </mesh>
+      ))}
     </group>
   );
 }
