@@ -5,6 +5,7 @@ import Ground from "./Ground";
 import Obstacles from "./Obstacles";
 import Creatures from "./Creatures";
 import Sigil from "./Sigil";
+import SigilGlow from "./SigilGlow";
 import { environments } from "./environments";
 
 export default function GameScene() {
@@ -70,6 +71,7 @@ export default function GameScene() {
         <pointLight position={[0, 3, -5]} intensity={0.5} color={env.accentColor} />
         <pointLight position={[0, 5, -35]} intensity={2} color="#ffffff" distance={50} />
 
+        <SigilGlow accentColor={env.accentColor} />
         <Sigil color={env.obstacleColor} accentColor={env.accentColor} />
         <BuzzLightyear targetX={targetX} />
         <Ground color={env.groundColor} speed={speed} />
