@@ -1,89 +1,105 @@
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Mesh, AdditiveBlending } from "three";
+import { Mesh, CanvasTexture, AdditiveBlending } from "three";
+
+function makeHaloTexture(color: string, size = 512, peakAt = 0.35) {
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d")!;
+  const cx = size / 2;
+
+  // Parse hex color to rgb
+  const r = parseInt(color.slice(1, 3), 16);
+  const g = parseInt(color.slice(3, 5), 16);
+  const b = parseInt(color.slice(5, 7), 16);
+
+  const grad = ctx.createRadialGradient(cx, cx, 0, cx, cx, cx);
+  // Center: fully transparent
+  grad.addColorStop(0,         `rgba(${r},${g},${b},0)`);
+  // Inner dark zone still transparent
+  grad.addColorStop(peakAt * 0.5, `rgba(${r},${g},${b},0.04)`);
+  // Peak glow ring
+  grad.addColorStop(peakAt,    `rgba(${r},${g},${b},1)`);
+  // Outer fade
+  grad.addColorStop(peakAt + 0.2, `rgba(${r},${g},${b},0.45)`);
+  grad.addColorStop(0.85,      `rgba(${r},${g},${b},0.12)`);
+  grad.addColorStop(1,         `rgba(${r},${g},${b},0)`);
+
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, size, size);
+  return new CanvasTexture(canvas);
+}
 
 interface SigilGlowProps {
   accentColor: string;
 }
 
 export default function SigilGlow({ accentColor }: SigilGlowProps) {
-  const core = useRef<Mesh>(null);
-  const mid = useRef<Mesh>(null);
+  const inner = useRef<Mesh>(null);
+  const mid   = useRef<Mesh>(null);
   const outer = useRef<Mesh>(null);
-  const halo = useRef<Mesh>(null);
+
+  // Re-generate textures when accent color changes
+  const textures = useMemo(() => ({
+    inner: makeHaloTexture(accentColor, 512, 0.30),
+    mid:   makeHaloTexture(accentColor, 512, 0.40),
+    outer: makeHaloTexture(accentColor, 512, 0.55),
+  }), [accentColor]);
 
   useFrame(() => {
     const t = Date.now() * 0.001;
-    const pulse = 0.7 + Math.sin(t * 0.7) * 0.3;
-    const pulse2 = 0.5 + Math.sin(t * 0.4 + 1.2) * 0.35;
-    const pulse3 = 0.3 + Math.sin(t * 0.3 + 2.5) * 0.2;
 
-    if (core.current) {
-      (core.current.material as any).opacity = pulse * 0.55;
-      const s = 0.9 + Math.sin(t * 0.8) * 0.1;
-      core.current.scale.set(s, s, 1);
+    if (inner.current) {
+      (inner.current.material as any).opacity = 0.75 + Math.sin(t * 0.9) * 0.25;
+      const s = 1 + Math.sin(t * 0.7) * 0.06;
+      inner.current.scale.set(s, s, 1);
     }
     if (mid.current) {
-      (mid.current.material as any).opacity = pulse2 * 0.35;
-      const s = 1 + Math.sin(t * 0.5 + 0.5) * 0.08;
+      (mid.current.material as any).opacity = 0.55 + Math.sin(t * 0.5 + 1.1) * 0.2;
+      const s = 1 + Math.sin(t * 0.45 + 0.8) * 0.05;
       mid.current.scale.set(s, s, 1);
     }
     if (outer.current) {
-      (outer.current.material as any).opacity = pulse3 * 0.18;
-      const s = 1 + Math.sin(t * 0.35 + 1.0) * 0.06;
+      (outer.current.material as any).opacity = 0.35 + Math.sin(t * 0.3 + 2.0) * 0.15;
+      const s = 1 + Math.sin(t * 0.3 + 1.5) * 0.04;
       outer.current.scale.set(s, s, 1);
-    }
-    if (halo.current) {
-      (halo.current.material as any).opacity = 0.06 + Math.sin(t * 0.25) * 0.04;
     }
   });
 
-  // position z=-37 puts it behind the sigil at z=-35
   return (
     <group position={[0, 5, -37]}>
-      {/* Tight bright core glow */}
-      <mesh ref={core}>
-        <planeGeometry args={[18, 18]} />
+      {/* Tight halo ring — peak glow close to center */}
+      <mesh ref={inner}>
+        <planeGeometry args={[30, 30]} />
         <meshBasicMaterial
-          color={accentColor}
+          map={textures.inner}
           transparent
-          opacity={0.5}
+          opacity={0.75}
           depthWrite={false}
           blending={AdditiveBlending}
         />
       </mesh>
 
-      {/* Mid glow halo */}
+      {/* Mid corona */}
       <mesh ref={mid} position={[0, 0, -0.5]}>
-        <planeGeometry args={[40, 40]} />
+        <planeGeometry args={[60, 60]} />
         <meshBasicMaterial
-          color={accentColor}
+          map={textures.mid}
           transparent
-          opacity={0.3}
+          opacity={0.55}
           depthWrite={false}
           blending={AdditiveBlending}
         />
       </mesh>
 
-      {/* Outer diffuse bloom */}
+      {/* Vast outer nebula bloom */}
       <mesh ref={outer} position={[0, 0, -1]}>
-        <planeGeometry args={[80, 80]} />
+        <planeGeometry args={[140, 140]} />
         <meshBasicMaterial
-          color={accentColor}
+          map={textures.outer}
           transparent
-          opacity={0.15}
-          depthWrite={false}
-          blending={AdditiveBlending}
-        />
-      </mesh>
-
-      {/* Vast sky tint — covers the whole background */}
-      <mesh ref={halo} position={[0, 0, -2]}>
-        <planeGeometry args={[200, 200]} />
-        <meshBasicMaterial
-          color={accentColor}
-          transparent
-          opacity={0.07}
+          opacity={0.35}
           depthWrite={false}
           blending={AdditiveBlending}
         />
