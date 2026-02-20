@@ -71,7 +71,7 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
   }, []);
 
   return (
-    <group position={[0, 5, -25]}>
+    <group position={[0, 5, -35]}>
       <group ref={group}>
         {/* Outer ring segments */}
         {outerRing.map((pos, i) => {
@@ -82,8 +82,8 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
           const len = Math.sqrt((next[0] - pos[0]) ** 2 + (next[1] - pos[1]) ** 2);
           return (
             <mesh key={`o${i}`} position={[mx, my, 0]} rotation={[0, 0, angle]}>
-              <boxGeometry args={[len, 0.25, 0.1]} />
-              <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={8} flatShading transparent opacity={0.95} />
+              <boxGeometry args={[len, 0.15, 0.05]} />
+              <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={1.5} flatShading transparent opacity={0.75} />
             </mesh>
           );
         })}
@@ -98,8 +98,8 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
           const len = Math.sqrt((next[0] - pos[0]) ** 2 + (next[1] - pos[1]) ** 2) * scale;
           return (
             <mesh key={`o2-${i}`} position={[mx, my, -0.1]} rotation={[0, 0, angle]}>
-              <boxGeometry args={[len, 0.12, 0.05]} />
-              <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={5} flatShading transparent opacity={0.7} />
+              <boxGeometry args={[len, 0.08, 0.03]} />
+              <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={0.8} flatShading transparent opacity={0.35} />
             </mesh>
           );
         })}
@@ -113,8 +113,8 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
           const len = Math.sqrt((next[0] - pos[0]) ** 2 + (next[1] - pos[1]) ** 2);
           return (
             <mesh key={`s${i}`} position={[mx, my, 0]} rotation={[0, 0, angle]}>
-              <boxGeometry args={[len, 0.1, 0.05]} />
-              <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={6} flatShading transparent opacity={0.8} />
+              <boxGeometry args={[len, 0.08, 0.03]} />
+              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.5} flatShading transparent opacity={0.4} />
             </mesh>
           );
         })}
@@ -126,14 +126,14 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
               const angle = bolt.angle + Math.sin(si * 2) * 0.3;
               return (
                 <mesh key={`b${bi}-${si}`} position={seg} rotation={[0, 0, angle]}>
-                   <boxGeometry args={[1.0, 0.07, 0.04]} />
-                   <meshStandardMaterial
+                  <boxGeometry args={[0.8, 0.04, 0.02]} />
+                  <meshStandardMaterial
                     color="#ffffff"
                     emissive={accentColor}
-                    emissiveIntensity={8}
+                    emissiveIntensity={2.5}
                     flatShading
                     transparent
-                    opacity={0.9 - si * 0.08}
+                    opacity={0.7 - si * 0.08}
                   />
                 </mesh>
               );
@@ -145,14 +145,14 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
         <group ref={sparksRef}>
           {sparkPositions.map((pos, i) => (
             <mesh key={`sp${i}`} position={pos}>
-              <sphereGeometry args={[0.12 + (i % 3) * 0.06, 4, 3]} />
+              <sphereGeometry args={[0.08 + (i % 3) * 0.04, 4, 3]} />
               <meshStandardMaterial
                 color="#ffffff"
-                emissive={i % 2 === 0 ? accentColor : "#ffffff"}
-                emissiveIntensity={10}
+                emissive={i % 2 === 0 ? accentColor : color}
+                emissiveIntensity={3}
                 flatShading
                 transparent
-                opacity={0.95}
+                opacity={0.8}
               />
             </mesh>
           ))}
@@ -169,8 +169,8 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
             const len = Math.sqrt((next[0] - pos[0]) ** 2 + (next[1] - pos[1]) ** 2);
             return (
               <mesh key={`h${i}`} position={[mx, my, 0]} rotation={[0, 0, angle]}>
-              <boxGeometry args={[len, 0.18, 0.06]} />
-              <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={8} flatShading transparent opacity={0.9} />
+              <boxGeometry args={[len, 0.12, 0.04]} />
+              <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={1.8} flatShading transparent opacity={0.6} />
               </mesh>
             );
           })}
@@ -178,8 +178,8 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
           {/* Cross-lines through center */}
           {[0, Math.PI / 3, (2 * Math.PI) / 3].map((a, i) => (
             <mesh key={`c${i}`} rotation={[0, 0, a]}>
-              <boxGeometry args={[9, 0.1, 0.05]} />
-              <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={6} flatShading transparent opacity={0.6} />
+              <boxGeometry args={[9, 0.06, 0.03]} />
+              <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={0.6} flatShading transparent opacity={0.3} />
             </mesh>
           ))}
 
@@ -195,41 +195,41 @@ export default function Sigil({ color, accentColor }: { color: string; accentCol
             const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
             return (
               <mesh key={`tri${i}`} position={[mx, my, 0.05]} rotation={[0, 0, angle]}>
-                <boxGeometry args={[len, 0.15, 0.05]} />
-                <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={6} flatShading transparent opacity={0.75} />
+                <boxGeometry args={[len, 0.1, 0.03]} />
+                <meshStandardMaterial color={color} emissive={accentColor} emissiveIntensity={0.7} flatShading transparent opacity={0.35} />
               </mesh>
             );
           })}
 
           {/* Center eye */}
           <mesh>
-            <ringGeometry args={[0.8, 1.4, 6]} />
-            <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={10} side={DoubleSide} flatShading transparent opacity={0.95} />
+            <ringGeometry args={[0.8, 1.2, 6]} />
+            <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={2} side={DoubleSide} flatShading transparent opacity={0.8} />
           </mesh>
           <mesh>
-            <sphereGeometry args={[0.6, 5, 4]} />
-            <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={10} flatShading transparent opacity={0.95} />
+            <sphereGeometry args={[0.5, 5, 4]} />
+            <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={3} flatShading transparent opacity={0.7} />
           </mesh>
           {/* Inner eye ring */}
           <mesh>
-            <ringGeometry args={[1.4, 1.8, 8]} />
-            <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={7} side={DoubleSide} flatShading transparent opacity={0.7} />
+            <ringGeometry args={[1.4, 1.6, 8]} />
+            <meshStandardMaterial color={color} emissive={accentColor} emissiveIntensity={0.8} side={DoubleSide} flatShading transparent opacity={0.3} />
           </mesh>
         </group>
 
         {/* Rune circles at vertices */}
         {outerRing.filter((_, i) => i % 3 === 0).map((pos, i) => (
           <mesh key={`r${i}`} position={pos}>
-            <ringGeometry args={[0.25, 0.45, 5]} />
-            <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={8} side={DoubleSide} flatShading transparent opacity={0.9} />
+            <ringGeometry args={[0.2, 0.35, 5]} />
+            <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={1.2} side={DoubleSide} flatShading transparent opacity={0.5} />
           </mesh>
         ))}
 
         {/* Additional rune marks at every other vertex */}
         {outerRing.filter((_, i) => i % 2 === 1).map((pos, i) => (
           <mesh key={`rm${i}`} position={pos}>
-            <boxGeometry args={[0.4, 0.4, 0.04]} />
-            <meshStandardMaterial color="#ffffff" emissive={accentColor} emissiveIntensity={6} side={DoubleSide} flatShading transparent opacity={0.7} />
+            <boxGeometry args={[0.3, 0.3, 0.02]} />
+            <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={0.9} side={DoubleSide} flatShading transparent opacity={0.3} />
           </mesh>
         ))}
       </group>
