@@ -63,12 +63,13 @@ export default function GameScene() {
         dpr={1}
       >
         <color attach="background" args={[env.skyColor]} />
-        <fog attach="fog" args={[env.fogColor, 5, 40]} />
+        <fog attach="fog" args={[env.fogColor, 8, 60]} />
 
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 10, 5]} intensity={1} />
         <pointLight position={[0, 3, -5]} intensity={0.5} color={env.accentColor} />
-        <pointLight position={[0, 5, -35]} intensity={2} color="#ffffff" distance={50} />
+        <pointLight position={[0, 5, -25]} intensity={10} color="#ffffff" distance={80} />
+        <pointLight position={[0, 2, -20]} intensity={5} color="#ffffff" distance={60} />
 
         <Sigil color={env.obstacleColor} accentColor={env.accentColor} />
         <BuzzLightyear targetX={targetX} />
