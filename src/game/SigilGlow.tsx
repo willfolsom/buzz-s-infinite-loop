@@ -2,7 +2,7 @@ import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Mesh, CanvasTexture, AdditiveBlending } from "three";
 
-function makeHaloTexture(color: string, size = 512, peakAt = 0.35) {
+function makeHaloTexture(color: string, size = 512, peakAt = 0.65) {
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
@@ -15,16 +15,16 @@ function makeHaloTexture(color: string, size = 512, peakAt = 0.35) {
   const b = parseInt(color.slice(5, 7), 16);
 
   const grad = ctx.createRadialGradient(cx, cx, 0, cx, cx, cx);
-  // Center: fully transparent
-  grad.addColorStop(0,         `rgba(${r},${g},${b},0)`);
-  // Inner dark zone still transparent
-  grad.addColorStop(peakAt * 0.5, `rgba(${r},${g},${b},0.04)`);
-  // Peak glow ring
-  grad.addColorStop(peakAt,    `rgba(${r},${g},${b},1)`);
+  // Large transparent center so sigil stays visible
+  grad.addColorStop(0,              `rgba(${r},${g},${b},0)`);
+  grad.addColorStop(peakAt * 0.6,   `rgba(${r},${g},${b},0)`);
+  grad.addColorStop(peakAt * 0.85,  `rgba(${r},${g},${b},0.08)`);
+  // Peak glow ring near the edge
+  grad.addColorStop(peakAt,         `rgba(${r},${g},${b},1)`);
   // Outer fade
-  grad.addColorStop(peakAt + 0.2, `rgba(${r},${g},${b},0.45)`);
-  grad.addColorStop(0.85,      `rgba(${r},${g},${b},0.12)`);
-  grad.addColorStop(1,         `rgba(${r},${g},${b},0)`);
+  grad.addColorStop(peakAt + 0.12,  `rgba(${r},${g},${b},0.5)`);
+  grad.addColorStop(0.92,           `rgba(${r},${g},${b},0.1)`);
+  grad.addColorStop(1,              `rgba(${r},${g},${b},0)`);
 
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, size, size);
@@ -42,9 +42,9 @@ export default function SigilGlow({ accentColor }: SigilGlowProps) {
 
   // Re-generate textures when accent color changes
   const textures = useMemo(() => ({
-    inner: makeHaloTexture(accentColor, 512, 0.30),
-    mid:   makeHaloTexture(accentColor, 512, 0.40),
-    outer: makeHaloTexture(accentColor, 512, 0.55),
+    inner: makeHaloTexture(accentColor, 512, 0.62),
+    mid:   makeHaloTexture(accentColor, 512, 0.68),
+    outer: makeHaloTexture(accentColor, 512, 0.72),
   }), [accentColor]);
 
   useFrame(() => {
