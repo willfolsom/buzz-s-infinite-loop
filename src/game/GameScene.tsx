@@ -14,6 +14,7 @@ export default function GameScene() {
   const [targetX, setTargetX] = useState(0);
   const [paused, setPaused] = useState(false);
   const [score, setScore] = useState(0);
+  const [restartKey, setRestartKey] = useState(0);
   const [highScore, setHighScore] = useState(() => {
     const saved = localStorage.getItem("buzzHighScore");
     return saved ? parseInt(saved, 10) : 0;
@@ -55,6 +56,7 @@ export default function GameScene() {
           setPaused(false);
           setScore(0);
           setTargetX(0);
+          setRestartKey((k) => k + 1);
           playerXRef.current = 0;
         }
       }
@@ -117,18 +119,19 @@ export default function GameScene() {
         <SigilGlow accentColor={env.accentColor} />
         <Sigil color={env.obstacleColor} accentColor={env.accentColor} />
         <BuzzLightyear targetX={targetX} paused={paused} />
-        <Ground color={env.groundColor} speed={paused ? 0 : speed} />
+        <Ground key={`g-${restartKey}`} color={env.groundColor} speed={paused ? 0 : speed} />
         <Obstacles
+          key={`o-${restartKey}`}
           color={env.obstacleColor}
           accentColor={env.accentColor}
           speed={paused ? 0 : speed}
-          seed={envIndex * 1000}
+          seed={envIndex * 1000 + restartKey * 77}
           playerX={playerXRef.current}
           onHit={handleHit}
           paused={paused}
         />
-        <Creatures envIndex={envIndex} speed={paused ? 0 : speed} playerX={playerXRef.current} onHit={handleHit} paused={paused} />
-        <Powerups speed={paused ? 0 : speed} seed={envIndex * 1000} playerX={playerXRef.current} onCollect={handleCollect} paused={paused} />
+        <Creatures key={`c-${restartKey}`} envIndex={envIndex} speed={paused ? 0 : speed} playerX={playerXRef.current} onHit={handleHit} paused={paused} />
+        <Powerups key={`p-${restartKey}`} speed={paused ? 0 : speed} seed={envIndex * 1000 + restartKey * 77} playerX={playerXRef.current} onCollect={handleCollect} paused={paused} />
       </Canvas>
 
       {/* Hidden SoundCloud autoplay */}
