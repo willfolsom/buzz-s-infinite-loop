@@ -396,9 +396,12 @@ function FireDjinn({ position }: { position: [number, number, number] }) {
 interface CreaturesProps {
   envIndex: number;
   speed: number;
+  playerX: number;
+  onHit: () => void;
+  paused: boolean;
 }
 
-export default function Creatures({ envIndex, speed }: CreaturesProps) {
+export default function Creatures({ envIndex, speed, playerX, onHit, paused }: CreaturesProps) {
   const group = useRef<Group>(null);
   const offsetRef = useRef(0);
 
@@ -421,9 +424,17 @@ export default function Creatures({ envIndex, speed }: CreaturesProps) {
   }, [envIndex]);
 
   useFrame((_, delta) => {
-    if (!group.current) return;
+    if (!group.current || paused) return;
     offsetRef.current += speed * delta;
     group.current.position.z = offsetRef.current % 80;
+
+    // Hit detection against creatures
+    creatures.forEach((c) => {
+      const worldZ = c.position[2] + group.current!.position.z;
+      if (worldZ > 0 && worldZ < 3 && Math.abs(c.position[0] - playerX) < 1.2) {
+        onHit();
+      }
+    });
   });
 
   return (

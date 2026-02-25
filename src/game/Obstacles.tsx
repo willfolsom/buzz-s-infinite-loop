@@ -7,6 +7,9 @@ interface ObstaclesProps {
   accentColor: string;
   speed: number;
   seed: number;
+  playerX: number;
+  onHit: () => void;
+  paused: boolean;
 }
 
 function seededRandom(s: number) {
@@ -14,7 +17,7 @@ function seededRandom(s: number) {
   return x - Math.floor(x);
 }
 
-export default function Obstacles({ color, accentColor, speed, seed }: ObstaclesProps) {
+export default function Obstacles({ color, accentColor, speed, seed, playerX, onHit, paused }: ObstaclesProps) {
   const group = useRef<Group>(null);
   const offsetRef = useRef(0);
 
@@ -36,9 +39,17 @@ export default function Obstacles({ color, accentColor, speed, seed }: Obstacles
   }, [seed]);
 
   useFrame((_, delta) => {
-    if (!group.current) return;
+    if (!group.current || paused) return;
     offsetRef.current += speed * delta;
     group.current.position.z = offsetRef.current % 180;
+
+    // Hit detection
+    obstacles.forEach((obs) => {
+      const worldZ = obs.z + group.current!.position.z;
+      if (worldZ > 0.5 && worldZ < 2.5 && Math.abs(obs.x - playerX) < obs.scale * 0.8) {
+        onHit();
+      }
+    });
   });
 
   return (
