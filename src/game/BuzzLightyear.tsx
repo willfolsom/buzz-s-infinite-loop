@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Group } from "three";
 import { useFrame } from "@react-three/fiber";
 
-export default function BuzzLightyear({ targetX }: { targetX: number }) {
+export default function BuzzLightyear({ targetX, paused = false }: { targetX: number; paused?: boolean }) {
   const group = useRef<Group>(null);
   const leftLeg = useRef<Group>(null);
   const rightLeg = useRef<Group>(null);
@@ -12,15 +12,15 @@ export default function BuzzLightyear({ targetX }: { targetX: number }) {
   useFrame((_, delta) => {
     if (!group.current) return;
     group.current.position.x += (targetX - group.current.position.x) * 5 * delta;
-    group.current.position.y = Math.sin(Date.now() * 0.008) * 0.05;
-    group.current.rotation.z = (targetX - group.current.position.x) * -0.3;
-
-    // Running animation
-    const t = Date.now() * 0.01;
-    if (leftLeg.current) leftLeg.current.rotation.x = Math.sin(t) * 0.8;
-    if (rightLeg.current) rightLeg.current.rotation.x = Math.sin(t + Math.PI) * 0.8;
-    if (leftArm.current) leftArm.current.rotation.x = Math.sin(t + Math.PI) * 0.6;
-    if (rightArm.current) rightArm.current.rotation.x = Math.sin(t) * 0.6;
+    if (!paused) {
+      group.current.position.y = Math.sin(Date.now() * 0.008) * 0.05;
+      group.current.rotation.z = (targetX - group.current.position.x) * -0.3;
+      const t = Date.now() * 0.01;
+      if (leftLeg.current) leftLeg.current.rotation.x = Math.sin(t) * 0.8;
+      if (rightLeg.current) rightLeg.current.rotation.x = Math.sin(t + Math.PI) * 0.8;
+      if (leftArm.current) leftArm.current.rotation.x = Math.sin(t + Math.PI) * 0.6;
+      if (rightArm.current) rightArm.current.rotation.x = Math.sin(t) * 0.6;
+    }
   });
 
   return (
